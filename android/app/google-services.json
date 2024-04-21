@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1002496221890",
+    "project_id": "yegestao",
+    "storage_bucket": "yegestao.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002496221890:android:e2c837e2b3a1dc566c515b",
+        "android_client_info": {
+          "package_name": "com.example.gestao"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAc4u85nsUX8Jvuv8KzGWj8PgasZx_nrGA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002496221890:android:5a272ce4cfd94d176c515b",
+        "android_client_info": {
+          "package_name": "com.example.yegestao"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAc4u85nsUX8Jvuv8KzGWj8PgasZx_nrGA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
