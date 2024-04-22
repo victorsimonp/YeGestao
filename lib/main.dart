@@ -11,8 +11,7 @@ void main() async {
 );
   runApp(const MyApp());
 
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-  firestore.collection("Só para testar").doc("Estou testando").set({"funcionou?": true,});
+ 
 }
 
 class MyApp extends StatelessWidget {
@@ -22,7 +21,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Ye Gestão de Saúde',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 44, 44, 44)),
         useMaterial3: true,

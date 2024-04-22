@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gestao/Usuario.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:uuid/uuid.dart';
+import 'package:flutter_email_validator/flutter_email_validator.dart';
 
 class login extends StatefulWidget {
   const login({super.key});
@@ -13,6 +17,12 @@ class login extends StatefulWidget {
 
 class _loginState extends State<login> {
   bool queroEntrar = true;
+  // controladores de campos
+  TextEditingController controladorNome = TextEditingController();
+  TextEditingController controladoremail = TextEditingController();
+  TextEditingController controladorsenha = TextEditingController();
+  final List<Usuario> listaUsuario = [];
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,8 +52,9 @@ class _loginState extends State<login> {
                             padding: const EdgeInsets.only(
                                 top: 2.0, left: 10.0, right: 10.0),
                             child: TextFormField(
+                              controller: controladoremail,
                               decoration: InputDecoration(
-                                  label: Text("Login",
+                                  label: Text("E-mail",
                                       style: TextStyle(
                                           color:
                                               Color.fromARGB(255, 44, 44, 44))),
@@ -57,6 +68,7 @@ class _loginState extends State<login> {
                             padding:
                                 const EdgeInsets.only(left: 10.0, right: 10.0),
                             child: TextFormField(
+                              controller: controladorsenha,
                               decoration: InputDecoration(
                                   label: Text(
                                     "Senha",
@@ -78,9 +90,10 @@ class _loginState extends State<login> {
                                     padding: const EdgeInsets.only(
                                         left: 10.0, right: 10.0),
                                     child: TextFormField(
+                                      controller: controladorNome,
                                       decoration: InputDecoration(
                                         label: Text(
-                                          "e-mail",
+                                          "Nome",
                                           style: TextStyle(
                                               color: const Color.fromARGB(
                                                   255, 44, 44, 44)),
@@ -198,10 +211,48 @@ class _loginState extends State<login> {
                             height: 20,
                           ),
                           TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 setState(() {
                                   queroEntrar = !queroEntrar;
                                 });
+
+                                Usuario usuario = Usuario(
+                                    id: const Uuid().v1(),
+                                    nome: controladorNome.text,
+                                    email: controladoremail.text,
+                                    senha: controladorsenha.text);
+
+                                // Verificar se os campos obrigatórios não estão vazios
+                                if (usuario.nome.isNotEmpty &&
+                                    usuario.email != null &&
+                                    usuario.email!.isNotEmpty &&
+                                    usuario.senha != null &&
+                                    usuario.senha!.isNotEmpty) {
+                                  try {
+                                    // Salvar os dados do usuário no Firestore
+                                    await firestore
+                                        .collection("Usuários")
+                                        .doc(usuario.id)
+                                        .set(usuario.toMap());
+
+                                    // Registrar o usuário no Firebase Authentication
+                                    await FirebaseAuth.instance
+                                        .createUserWithEmailAndPassword(
+                                            email: usuario.email!,
+                                            password: usuario.senha!);
+
+                                    // O usuário foi registrado com sucesso
+                                    print("Usuário cadastrado com sucesso!");
+
+                                    // Agora você pode implementar o código de login aqui, se necessário
+                                  } catch (e) {
+                                    // Lidar com qualquer erro que possa ocorrer durante o cadastro ou registro
+                                    print("Erro ao cadastrar o usuário: $e");
+                                  }
+                                } else {
+                                  print(
+                                      "Por favor, preencha todos os campos obrigatórios.");
+                                }
                               },
                               child: Text(
                                 (queroEntrar)
