@@ -1,12 +1,12 @@
-# gestao
+# Ye Gestão de Saúde
 
-A new Flutter project.
+O Ye Gestão de Saúde é um aplicativo desenvolvido em parceria com a instituição São Camilo, com o objetivo de auxiliar os usuários na administração eficaz de sua saúde diária. Este aplicativo oferece diversas funcionalidades para acompanhar e gerenciar informações relevantes sobre saúde, permitindo aos usuários manterem-se informados e organizados em relação aos seus cuidados pessoais..
 
-## Getting Started
+## Funcionalidades Principais
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
+Registro de Saúde Diária: Os usuários podem registrar informações sobre sua saúde diária, incluindo aferição de pressão, glicemia, altura e peso, e muito mais.
+Lembretes e Notificações: Os usuários podem configurar lembretes e receber notificações para tomar medicamentos.
+Integração com Firebase: O aplicativo utiliza o Firebase como banco de dados em tempo real, garantindo uma experiência de usuário fluida e sincronizada em todos os dispositivos.
 
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
