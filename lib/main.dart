@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:gestao/pages/listaExame.dart';
 import 'package:gestao/pages/login.dart';
 import 'firebase_options.dart';
 
@@ -23,13 +24,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Ye Gestão de Saúde',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 44, 44, 44)),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromRGBO(71, 146, 121, 0.612)),
         useMaterial3: true,
       ),
-      home: login()
+      home: ListaExame()
     );
   }
 }
-
-
-

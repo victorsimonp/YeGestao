@@ -43,6 +43,7 @@ dependencies:
   flutter_facebook_auth: ^3.5.0
   uuid: ^4.4.0
   flutter_email_validator: ^2.0.1
+  
 
 dev_dependencies:
   flutter_test:

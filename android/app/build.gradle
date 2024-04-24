@@ -31,7 +31,10 @@ android {
     ndkVersion flutter.ndkVersion
     defaultConfig {
         minSdkVersion 21          
-        }                    
+        }  
+    lintOptions {
+            checkReleaseBuilds false
+        }                  
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

@@ -64,6 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1002496221890',
     projectId: 'yegestao',
     storageBucket: 'yegestao.appspot.com',
+    iosClientId: '1002496221890-jcvlavtckvh9g3oh1rof4nlrh6rm883b.apps.googleusercontent.com',
     iosBundleId: 'com.example.gestao',
   );
 
@@ -73,6 +74,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1002496221890',
     projectId: 'yegestao',
     storageBucket: 'yegestao.appspot.com',
+    iosClientId: '1002496221890-jcvlavtckvh9g3oh1rof4nlrh6rm883b.apps.googleusercontent.com',
     iosBundleId: 'com.example.gestao',
   );
 
@@ -85,4 +87,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'yegestao.appspot.com',
     measurementId: 'G-MX5V6JGCQC',
   );
+
 }
