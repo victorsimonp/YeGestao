@@ -3,7 +3,7 @@ import 'package:gestao/pages/formularioExame.dart';
 import 'package:flutter/material.dart';
 
 class ListaExame extends StatefulWidget {
-  final List<Exame> _transferencias = [];
+  final List<Exame> _exames = [];
 
   @override
   State<StatefulWidget> createState() {
@@ -23,10 +23,10 @@ class ListaExameState extends State<ListaExame> {
         centerTitle: true,
       ),
       body: ListView.builder(
-        itemCount: widget._transferencias.length,
+        itemCount: widget._exames.length,
         itemBuilder: (context, indice) {
-          final transferencia = widget._transferencias[indice];
-          return ItemTrasferencia(transferencia);
+          final exame = widget._exames[indice];
+          return itemExame(exame);
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -35,12 +35,12 @@ class ListaExameState extends State<ListaExame> {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
             return FormularioExame();
           }));
-          future.then((transferenciaRecebida) {
+          future.then((exameRecebido) {
             Future.delayed(Duration(seconds: 1), (){
             debugPrint('chegou no then do future');
-            debugPrint('$transferenciaRecebida');
+            debugPrint('$exameRecebido');
             setState(() {
-              widget._transferencias.add(transferenciaRecebida);
+              widget._exames.add(exameRecebido);
             });
               
             });
@@ -53,18 +53,18 @@ class ListaExameState extends State<ListaExame> {
   }
 }
 
-class ItemTrasferencia extends StatelessWidget {
-  final Exame _transferencia;
+class itemExame extends StatelessWidget {
+  final Exame _exame;
 
-  ItemTrasferencia(this._transferencia);
+  itemExame(this._exame);
 
   @override
   Widget build(BuildContext context) {
     return Card(
         child: ListTile(
       leading: Icon(Icons.medication),
-      title: Text(_transferencia.data.toString()),
-      subtitle: Text(_transferencia.nomeExame.toString()),
+      title: Text(_exame.data.toString()),
+      subtitle: Text(_exame.nomeExame.toString()),
     ));
   }
 }

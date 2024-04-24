@@ -44,11 +44,11 @@ class FormularioExameState extends State<FormularioExame> {
                   final String? data =
                       (_controladorDataExame.text);
                   if (nomeExame != null && data != null) {
-                    final transferenciaCriada =
+                    final formularioCriado =
                         Exame(nomeExame, data);
                     debugPrint('Histórico Exame');
-                    debugPrint('$transferenciaCriada');
-                    Navigator.pop(context, transferenciaCriada);
+                    debugPrint('$formularioCriado');
+                    Navigator.pop(context, formularioCriado);
                   }
                 },
                 style: ElevatedButton.styleFrom(
