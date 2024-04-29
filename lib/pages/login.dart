@@ -6,6 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:uuid/uuid.dart';
+import 'package:gestao/pages/telaPrincipal.dart';
 
 class login extends StatefulWidget {
   const login({super.key});
@@ -178,8 +179,117 @@ class _loginState extends State<login> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10.0),
                                 child: ElevatedButton(
-                                  onPressed: () {
-                                    botaoPrincipalClicado();
+                                  onPressed: () async {
+                                    if (!queroEntrar == true) {
+                                      if (_formkey.currentState!.validate()) {
+                                        Usuario usuario = Usuario(
+                                          id: const Uuid().v1(),
+                                          nome: controladorNome.text,
+                                          email: controladoremail.text,
+                                          senha: controladorsenha.text,
+                                        );
+
+                                        // Verificar se os campos obrigatórios não estão vazios
+                                        if (usuario.nome.isNotEmpty &&
+                                            usuario.email != null &&
+                                            usuario.email!.isNotEmpty &&
+                                            usuario.senha != null &&
+                                            usuario.senha!.isNotEmpty) {
+                                          try {
+                                            // Verificar se o usuário já existe
+                                            bool userExists =
+                                                await checkUserExists(
+                                                    usuario.email!);
+
+                                            if (userExists) {
+                                              // Se o usuário já existe, exibir uma mensagem de erro
+                                              print(
+                                                  "Usuário já existe. Faça login em vez de se registrar.");
+                                            } else {
+                                              // Se o usuário não existe, criar um novo registro
+                                              // Salvar os dados do usuário no Firestore
+                                              await firestore
+                                                  .collection("Usuários")
+                                                  .doc(usuario.id)
+                                                  .set(usuario.toMap());
+
+                                              DocumentSnapshot userSnapshot =
+                                                  await FirebaseFirestore
+                                                      .instance
+                                                      .collection("Usuários")
+                                                      .doc(usuario.id)
+                                                      .get();
+
+                                              // Corrigido aqui
+
+                                              // O usuário foi registrado com sucesso
+
+                                              // Registrar o usuário no Firebase Authentication
+                                              await FirebaseAuth.instance
+                                                  .createUserWithEmailAndPassword(
+                                                email: usuario.email!,
+                                                password: usuario.senha!,
+                                              );
+
+                                              print(
+                                                  "Usuário cadastrado com sucesso!");
+                                            }
+                                          } catch (e) {
+                                            // Lidar com qualquer erro que possa ocorrer durante o cadastro ou registro
+                                            print(
+                                                "Erro ao cadastrar o usuário: $e");
+                                          }
+                                        } else {
+                                          print(
+                                              "Por favor, preencha todos os campos obrigatórios.");
+                                        }
+                                      } else {
+                                        print("Formulário inválido");
+                                      }
+                                    } else {
+                                      try {
+                                        // Verificar se o usuário existe no Firestore pelo email
+                                        QuerySnapshot querySnapshot =
+                                            await FirebaseFirestore.instance
+                                                .collection("Usuários")
+                                                .where('email',
+                                                    isEqualTo:
+                                                        controladoremail.text)
+                                                .limit(1)
+                                                .get();
+
+                                        if (querySnapshot.docs.isNotEmpty) {
+                                          // Usuário encontrado, agora verificar a senha
+                                          DocumentSnapshot userSnapshot =
+                                              querySnapshot.docs.first;
+                                          String senha =
+                                              userSnapshot.get('senha');
+
+                                          if (senha == controladorsenha.text) {
+                                            // Senha correta, logar o usuário
+                                            String userName =
+                                                userSnapshot.get('nome');
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    telaPrincipal(
+                                                        nome: userName),
+                                              ),
+                                            );
+                                          }
+
+                                          // Restante do código para verificar a senha e fazer login...
+                                        } else {
+                                          // Usuário não encontrado com o email fornecido
+                                          print(
+                                              "Usuário não encontrado. Por favor, cadastre-se.");
+                                        }
+                                      } catch (e) {
+                                        print(
+                                            "Erro ao buscar o email no Firebase: $e");
+                                      }
+                                    }
                                   },
                                   style: ButtonStyle(
                                     backgroundColor: MaterialStateProperty.all(
@@ -274,100 +384,46 @@ class _loginState extends State<login> {
                         ))))));
   }
 
-  botaoPrincipalClicado() async {
-    if (_formkey.currentState!.validate()) {
-      Usuario usuario = Usuario(
-        id: const Uuid().v1(),
-        nome: controladorNome.text,
-        email: controladoremail.text,
-        senha: controladorsenha.text,
-      );
+  Future<void> _logarComGoogle() async {
+    final GoogleSignIn _logarComGoogle = GoogleSignIn();
 
-      // Verificar se os campos obrigatórios não estão vazios
-      if (usuario.nome.isNotEmpty &&
-          usuario.email != null &&
-          usuario.email!.isNotEmpty &&
-          usuario.senha != null &&
-          usuario.senha!.isNotEmpty) {
-        try {
-          // Verificar se o usuário já existe
-          bool userExists = await checkUserExists(usuario.email!);
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await _logarComGoogle.signIn();
 
-          if (userExists) {
-            // Se o usuário já existe, exibir uma mensagem de erro
-            print("Usuário já existe. Faça login em vez de se registrar.");
-          } else {
-            // Se o usuário não existe, criar um novo registro
-            // Salvar os dados do usuário no Firestore
-            await firestore
-                .collection("Usuários")
-                .doc(usuario.id)
-                .set(usuario.toMap());
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+            await googleSignInAccount.authentication;
 
-            // Registrar o usuário no Firebase Authentication
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
-              email: usuario.email!,
-              password: usuario.senha!,
-            );
+        final AuthCredential credential = GoogleAuthProvider.credential(
+            idToken: googleSignInAuthentication.idToken,
+            accessToken: googleSignInAuthentication.accessToken);
 
-            // O usuário foi registrado com sucesso
-            print("Usuário cadastrado com sucesso!");
-          }
-        } catch (e) {
-          // Lidar com qualquer erro que possa ocorrer durante o cadastro ou registro
-          print("Erro ao cadastrar o usuário: $e");
-        }
-      } else {
-        print("Por favor, preencha todos os campos obrigatórios.");
+        // final UserCredential userCredential =
+        //     await _fi.signInWithCredential(credential);
+
+        // // Navegue para a próxima tela após o login com sucesso
+        // if (userCredential.user != null) {
+        //   Navigator.pushNamed(context as BuildContext, "/home");
+        // }
       }
-    } else {
-      print("Formulário inválido");
-    }
+    } catch (e) {}
   }
-}
 
+  Future<void> _logarComFacebook() async {
+    try {
+      final LoginResult result = await FacebookAuth.instance.login();
 
-
-
-Future<void> _logarComGoogle() async {
-  final GoogleSignIn _logarComGoogle = GoogleSignIn();
-
-  try {
-    final GoogleSignInAccount? googleSignInAccount =
-        await _logarComGoogle.signIn();
-
-    if (googleSignInAccount != null) {
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount.authentication;
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-          idToken: googleSignInAuthentication.idToken,
-          accessToken: googleSignInAuthentication.accessToken);
-
-      // final UserCredential userCredential =
-      //     await _fi.signInWithCredential(credential);
-
-      // // Navegue para a próxima tela após o login com sucesso
-      // if (userCredential.user != null) {
-      //   Navigator.pushNamed(context as BuildContext, "/home");
-      // }
+      if (result.status == LoginStatus.success) {
+        // Login com Facebook bem-sucedido, você pode prosseguir com o seu fluxo de autenticação aqui
+        print('Login com Facebook bem-sucedido!');
+      } else {
+        // Login com Facebook falhou, trate de acordo
+        print('Login com Facebook falhou: ${result.message}');
+      }
+    } catch (e) {
+      // Trate quaisquer erros de exceção aqui
+      print('Erro ao tentar fazer login com Facebook: $e');
     }
-  } catch (e) {}
-}
-
-Future<void> _logarComFacebook() async {
-  try {
-    final LoginResult result = await FacebookAuth.instance.login();
-
-    if (result.status == LoginStatus.success) {
-      // Login com Facebook bem-sucedido, você pode prosseguir com o seu fluxo de autenticação aqui
-      print('Login com Facebook bem-sucedido!');
-    } else {
-      // Login com Facebook falhou, trate de acordo
-      print('Login com Facebook falhou: ${result.message}');
-    }
-  } catch (e) {
-    // Trate quaisquer erros de exceção aqui
-    print('Erro ao tentar fazer login com Facebook: $e');
   }
 }

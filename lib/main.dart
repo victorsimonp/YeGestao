@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromRGBO(71, 146, 121, 0.612)),
         useMaterial3: true,
       ),
-      home: ListaExame()
+      home: login()
     );
   }
 }
