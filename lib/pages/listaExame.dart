@@ -18,10 +18,11 @@ class ListaExameState extends State<ListaExame> {
       appBar: AppBar(
        
         title: const Text('Histórico de Exame',
-          style: TextStyle(color: Colors.white,),),
+          style: TextStyle(color: Colors.black,),),
         backgroundColor: Color.fromRGBO(71, 146, 121, 0.612),
         centerTitle: true,
       ),
+       backgroundColor: Color.fromRGBO(182, 249, 234, 0.855),
       body: ListView.builder(
         itemCount: widget._exames.length,
         itemBuilder: (context, indice) {
@@ -47,7 +48,7 @@ class ListaExameState extends State<ListaExame> {
             
           });
         },
-        child: Icon(Icons.add, color: Colors.white , ), backgroundColor: Color.fromRGBO(71, 146, 121, 0.612),
+        child: Icon(Icons.add, color: Colors.black , ), backgroundColor: Color.fromRGBO(71, 146, 121, 0.612),
       ),
     );
   }

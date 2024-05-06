@@ -1,4 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:gestao/models/Exame.dart';
+import 'package:gestao/pages/formularioExame.dart';
+import 'package:gestao/pages/listaExame.dart';
 import 'package:gestao/pages/login.dart';
 
 
@@ -10,9 +15,16 @@ class telaPrincipal extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          // Removendo o título da AppBar
+           title: Text(
+            "YE Gestão de Saúde",
+            style: TextStyle(fontSize: 20),
+          ),
+          backgroundColor: Color.fromRGBO(71, 146, 121, 0.612),
+          centerTitle: true,
+          
           automaticallyImplyLeading: false,
         ),
+         backgroundColor: Color.fromRGBO(182, 249, 234, 0.855),
         body: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(
@@ -83,16 +95,45 @@ class telaPrincipal extends StatelessWidget {
             ),
           ),
         ),
-        bottomNavigationBar: BottomAppBar(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildBottomButton('Exames'),
-              _buildBottomButton('Consultas'),
-              _buildBottomButton('Medicação'),
-            ],
-          ),
-        ),
+      bottomNavigationBar: BottomAppBar(
+  color: Color.fromRGBO(179, 242, 228, 0.192),
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    children: [
+      TextButton(
+        onPressed: () {
+         
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ListaExame()),
+          );
+        },
+        child: Text('Exames', style: TextStyle(color: Colors.black, fontSize: 15),),
+      ),
+      TextButton(
+        onPressed: () {
+         
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => login()),
+          );
+        },
+        child: Text('Consultas',style: TextStyle(color: Colors.black, fontSize: 15),),
+      ),
+      TextButton(
+        onPressed: () {
+          
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => login()),
+          );
+        },
+        child: Text('Medicação',style: TextStyle(color: Colors.black, fontSize: 15),),
+      ),
+    ],
+  ),
+),
+
       ),
     );
   }
