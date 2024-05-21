@@ -1,9 +1,16 @@
 import 'package:gestao/models/Exame.dart';
 import 'package:gestao/pages/formularioExame.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
+//fazer pegar dados do firebase
+//corretamente pegar apenas pdf das imagens como nome do arquivo
+//baixar arquivo no firestore
 class ListaExame extends StatefulWidget {
+  final String idUsuario;
   final List<Exame> _exames = [];
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  ListaExame({required this.idUsuario});
 
   @override
   State<StatefulWidget> createState() {
@@ -13,17 +20,23 @@ class ListaExame extends StatefulWidget {
 
 class ListaExameState extends State<ListaExame> {
   @override
+  
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-       
-        title: const Text('Histórico de Exame',
-          style: TextStyle(color: Colors.black,),),
+        title: const Text(
+          'Histórico de Exame',
+          style: TextStyle(fontSize: 20.0,
+            color: Colors.black,
+          ),
+        ),
         backgroundColor: Color.fromRGBO(71, 146, 121, 0.612),
         centerTitle: true,
       ),
-       backgroundColor: Color.fromRGBO(182, 249, 234, 0.855),
-      body: ListView.builder(
+      backgroundColor: Colors.white,
+      body:
+      ListView.builder(
+
         itemCount: widget._exames.length,
         itemBuilder: (context, indice) {
           final exame = widget._exames[indice];
@@ -34,25 +47,30 @@ class ListaExameState extends State<ListaExame> {
         onPressed: () {
           final Future<dynamic> future =
               Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return FormularioExame();
+            return FormularioExame(
+              idUsuario: widget.idUsuario,
+            );
           }));
           future.then((exameRecebido) {
-            Future.delayed(Duration(seconds: 1), (){
-            debugPrint('chegou no then do future');
-            debugPrint('$exameRecebido');
-            setState(() {
-              widget._exames.add(exameRecebido);
+            Future.delayed(Duration(seconds: 1), () {
+              debugPrint('chegou no then do future');
+              debugPrint('$exameRecebido');
+              setState(() {
+                widget._exames.add(exameRecebido);
+              });
             });
-              
-            });
-            
           });
         },
-        child: Icon(Icons.add, color: Colors.black , ), backgroundColor: Color.fromRGBO(71, 146, 121, 0.612),
+        child: Icon(
+          Icons.add,
+          color: Colors.black,
+        ),
+        backgroundColor: Color.fromRGBO(71, 146, 121, 0.612),
       ),
     );
   }
 }
+
 
 class itemExame extends StatelessWidget {
   final Exame _exame;

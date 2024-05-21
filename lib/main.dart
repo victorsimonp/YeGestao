@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:gestao/models/Exame.dart';
 import 'package:gestao/pages/formularioExame.dart';
 import 'package:gestao/pages/listaExame.dart';
+import 'package:gestao/pages/listaGlicemia.dart';
+import 'package:gestao/pages/listaPressao.dart';
 import 'package:gestao/pages/login.dart';
 import 'package:gestao/pages/telaPrincipal.dart';
 import 'firebase_options.dart';

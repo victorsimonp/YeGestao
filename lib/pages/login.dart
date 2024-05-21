@@ -7,6 +7,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:uuid/uuid.dart';
 import 'package:gestao/pages/telaPrincipal.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:gestao/componentes/autenticacao.dart';
 
 class login extends StatefulWidget {
   const login({super.key});
@@ -24,6 +26,7 @@ class _loginState extends State<login> {
   TextEditingController controladorsenha = TextEditingController();
   final List<Usuario> listaUsuario = [];
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  FirebaseStorage storage = FirebaseStorage.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<bool> checkUserExists(String email) async {
@@ -50,7 +53,7 @@ class _loginState extends State<login> {
           centerTitle: true,
         ),
         resizeToAvoidBottomInset: false,
-        backgroundColor: Color.fromRGBO(182, 249, 234, 0.855),
+        backgroundColor: Colors.white,
         body: SingleChildScrollView(
             child: Center(
                 child: Padding(
@@ -212,10 +215,8 @@ class _loginState extends State<login> {
                                                   .collection("Usuários")
                                                   .doc(usuario.id)
                                                   .set(usuario.toMap());
-
                                               DocumentSnapshot userSnapshot =
-                                                  await FirebaseFirestore
-                                                      .instance
+                                                  await firestore
                                                       .collection("Usuários")
                                                       .doc(usuario.id)
                                                       .get();
@@ -248,7 +249,7 @@ class _loginState extends State<login> {
                                       }
                                     } else {
                                       try {
-                                        // Verificar se o usuário existe no Firestore pelo email
+                                        ;
                                         QuerySnapshot querySnapshot =
                                             await FirebaseFirestore.instance
                                                 .collection("Usuários")
@@ -257,6 +258,8 @@ class _loginState extends State<login> {
                                                         controladoremail.text)
                                                 .limit(1)
                                                 .get();
+                                        print(controladoremail.text);
+                                        print(controladorsenha.text);
 
                                         if (querySnapshot.docs.isNotEmpty) {
                                           // Usuário encontrado, agora verificar a senha
@@ -264,17 +267,31 @@ class _loginState extends State<login> {
                                               querySnapshot.docs.first;
                                           String senha =
                                               userSnapshot.get('senha');
+                                          String idAtual =
+                                              userSnapshot.get('id');
 
                                           if (senha == controladorsenha.text) {
-                                            // Senha correta, logar o usuário
+                                            try {
+                                              await FirebaseAuth.instance
+                                                  .signInWithEmailAndPassword(
+                                                      email:
+                                                          controladoremail.text,
+                                                      password: controladorsenha
+                                                          .text);
+                                            } catch (e) {
+                                              print(e);
+                                            }
+                                            ;
                                             String userName =
                                                 userSnapshot.get('nome');
+                                            print(idAtual);
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    telaPrincipal(
-                                                        nome: userName),
+                                                    TelaPrincipal(
+                                                        nome: userName,
+                                                        idUsuario: idAtual),
                                               ),
                                             );
                                           }
