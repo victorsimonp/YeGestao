@@ -1,7 +1,7 @@
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gestao/models/Exame.dart';
+import 'package:gestao/models/Glicemia.dart';
 import 'package:gestao/pages/TelaPrincipalIMC.dart';
 import 'package:gestao/pages/formularioExame.dart';
 import 'package:gestao/pages/formularioIMC.dart';
@@ -9,14 +9,20 @@ import 'package:gestao/pages/listaExame.dart';
 import 'package:gestao/pages/listaGlicemia.dart';
 import 'package:gestao/pages/listaPressao.dart';
 import 'package:gestao/pages/login.dart';
+import 'package:gestao/models/Pressao.dart'; // Certifique-se de que este caminho está correto
 
-class TelaPrincipal extends StatelessWidget {
+class TelaPrincipal extends StatefulWidget {
   final String nome;
   final String idUsuario;
-  final List<Exame> examesUsuario = [];
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   TelaPrincipal({required this.nome, required this.idUsuario});
+
+  @override
+  _TelaPrincipalState createState() => _TelaPrincipalState();
+}
+
+class _TelaPrincipalState extends State<TelaPrincipal> {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +46,7 @@ class TelaPrincipal extends StatelessWidget {
               children: [
                 SizedBox(height: 20),
                 Text(
-                  '$nome',
+                  '${widget.nome}',
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 40),
@@ -50,32 +56,160 @@ class TelaPrincipal extends StatelessWidget {
                   mainAxisSpacing: 20,
                   crossAxisSpacing: 20,
                   children: [
-                    _buildInfoCard(
-                      context,
-                      title: 'Última aferição de Pressão',
-                      value: '150x100\nAlta',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  ListaPressao(idUsuario: idUsuario)),
-                        );
+                    StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                      stream: firestore
+                          .collection("Usuários")
+                          .doc(widget.idUsuario)
+                          .collection('Pressão')
+                          .orderBy('data', descending: true)
+                          .limit(1)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return _buildInfoCard(
+                            context,
+                            title: 'Última aferição de Pressão',
+                            value: 'Erro ao carregar',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ListaPressao(idUsuario: widget.idUsuario)),
+                              );
+                            },
+                          );
+                        }
+
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return _buildInfoCard(
+                            context,
+                            title: 'Última aferição de Pressão',
+                            value: 'Carregando...',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ListaPressao(
+                                        idUsuario: widget.idUsuario)),
+                              );
+                            },
+                          );
+                        }
+
+                        if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                          var doc = snapshot.data!.docs.first.data();
+                          Pressao pressao = Pressao.fromMap(doc);
+                          String statusPressao =
+                              _determinePressaoStatus(pressao.status);
+                          return _buildInfoCard(
+                            context,
+                            title: 'Última aferição de Pressão',
+                            value: '${pressao.status}\n$statusPressao',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ListaPressao(
+                                        idUsuario: widget.idUsuario)),
+                              );
+                            },
+                          );
+                        } else {
+                          return _buildInfoCard(
+                            context,
+                            title: 'Última aferição de Pressão',
+                            value: 'Sem dados',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ListaPressao(
+                                        idUsuario: widget.idUsuario)),
+                              );
+                            },
+                          );
+                        }
                       },
                     ),
-                    _buildInfoCard(
-                      context,
-                      title: 'Última aferição de Glicemia',
-                      value: '85mg/Dl\nNormal',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  ListaGlicemia(idUsuario: idUsuario)),
-                        );
+                    StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                      stream: firestore
+                          .collection("Usuários")
+                          .doc(widget.idUsuario)
+                          .collection('Glicemia')
+                          .orderBy('data', descending: true)
+                          .limit(1)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return _buildInfoCard(
+                            context,
+                            title: 'Última aferição de Glicemia',
+                            value: 'Erro ao carregar',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ListaGlicemia(
+                                        idUsuario: widget.idUsuario)),
+                              );
+                            },
+                          );
+                        }
+
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return _buildInfoCard(
+                            context,
+                            title: 'Última aferição de Glicemia',
+                            value: '',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ListaGlicemia(
+                                        idUsuario: widget.idUsuario)),
+                              );
+                            },
+                          );
+                        }
+
+                        if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                          var doc = snapshot.data!.docs.first.data();
+                          Glicemia glicemia = Glicemia.fromMap(doc);
+                          String statusGlicemia =
+                              _determineGlicemiaStatus(glicemia.status);
+                          return _buildInfoCard(
+                            context,
+                            title: 'Última aferição de Glicemia',
+                            value: '${glicemia.status}\n$statusGlicemia',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ListaGlicemia(
+                                        idUsuario: widget.idUsuario)),
+                              );
+                            },
+                          );
+                        } else {
+                          return _buildInfoCard(
+                            context,
+                            title: 'Última aferição de Glicemia',
+                            value: 'Sem dados',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ListaGlicemia(
+                                        idUsuario: widget.idUsuario)),
+                              );
+                            },
+                          );
+                        }
                       },
                     ),
+                   
                     _buildInfoCard(
                       context,
                       title: 'Última verificação de peso e altura',
@@ -119,7 +253,7 @@ class TelaPrincipal extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  ListaExame(idUsuario: idUsuario)),
+                                  ListaExame(idUsuario: widget.idUsuario)),
                         );
                       },
                     ),
@@ -131,7 +265,7 @@ class TelaPrincipal extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  ListaGlicemia(idUsuario: idUsuario)),
+                                  ListaGlicemia(idUsuario: widget.idUsuario)),
                         );
                       },
                     ),
@@ -143,14 +277,14 @@ class TelaPrincipal extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  ListaPressao(idUsuario: idUsuario)),
+                                  ListaPressao(idUsuario: widget.idUsuario)),
                         );
                       },
                     ),
                   ],
                 ),
                 SizedBox(height: 40),
-                Padding(                  
+                Padding(
                   padding: EdgeInsets.only(left: 260, bottom: 50),
                   child: TextButton(
                     onPressed: () {
@@ -162,15 +296,50 @@ class TelaPrincipal extends StatelessWidget {
                     ),
                   ),
                 ),
-
               ],
             ),
           ),
-          
         ),
-        ),
+      ),
     );
   }
+
+  String _determinePressaoStatus(String pressao) {
+    final parts = pressao.split('/');
+    if (parts.length != 2) return "Formato inválido";
+
+    final sistolica = int.tryParse(parts[0]) ?? 0;
+    final diastolica = int.tryParse(parts[1]) ?? 0;
+
+    if (sistolica < 90 && diastolica < 60) {
+      return "Baixa";
+    } else if (sistolica < 120 && diastolica < 80) {
+      return "Ótima";
+    } else if (sistolica <= 129 && diastolica <= 84) {
+      return "Normal";
+    } else if (sistolica <= 139 && diastolica <= 89) {
+      return "Atenção";
+    } else if (sistolica >= 140 || diastolica >= 90) {
+      return "Alta";
+    } else {
+      return "Desconhecido";
+    }
+  }
+  String _determineGlicemiaStatus(String glicemia) {
+  int glicemiaValue = int.tryParse(glicemia) ?? 0;
+
+  if (glicemiaValue < 70) {
+    return "Baixa";
+  } else if (glicemiaValue < 100) {
+    return "Normal";
+  } else if (glicemiaValue >= 100 && glicemiaValue <= 126) {
+    return "Atenção";
+  } else if (glicemiaValue > 126) {
+    return "Alta";
+  } else {
+    return "Desconhecido";
+  }
+}
 
   Widget _buildInfoCard(BuildContext context,
       {required String title, required String value, required VoidCallback onTap}) {
@@ -251,3 +420,4 @@ class TelaPrincipal extends StatelessWidget {
     );
   }
 }
+
