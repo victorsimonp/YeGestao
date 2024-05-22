@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:gestao/componentes/Editor.dart';
@@ -42,20 +41,22 @@ class FormularioExameState extends State<FormularioExame> {
 
 //sem permissão para pegar arquivos por enquanto, não funciona
   void selecionarArquivos() async {
-    final permissao = await Permission.storage.request();
+    final permissao = await Permission.storage;
     if (permissao != PermissionStatus.granted) {
-      print(permissao);
+      await permissao.request();
     } else {
       FilePickerResult? arquivoFinal = await FilePicker.platform.pickFiles();
       if (arquivoFinal != null) {
-        PlatformFile file = arquivoFinal.files.first;
-        print(file.name);
-        print(file.bytes);
-        print(file.extension);
-        print(file.path);
-        caminho = file.path;
-        _arquivo = File(caminho);
-        _arquivoNome = file.name;
+         if (await permissao.isGranted) {
+          PlatformFile file = arquivoFinal.files.first;
+          print(file.name);
+          print(file.bytes);
+          print(file.extension);
+          print(file.path);
+          caminho = file.path;
+          _arquivo = File(caminho);
+          _arquivoNome = file.name;
+        }
       } else {
         print('erro');
       }
@@ -80,7 +81,7 @@ class FormularioExameState extends State<FormularioExame> {
         centerTitle: true,
         backgroundColor: Color.fromRGBO(71, 146, 121, 0.612),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Color.fromRGBO(182, 249, 234, 0.855),
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
@@ -159,8 +160,7 @@ class FormularioExameState extends State<FormularioExame> {
                         .add(formularioCriado.toMap());
                     debugPrint('Histórico Exame');
                     debugPrint('$formularioCriado');
-                    final arquivoEnviado =
-                        storage.ref('Exames/$arquivoAtual');
+                    final arquivoEnviado = storage.ref('Exames/$arquivoAtual');
                     await arquivoEnviado.putFile(arquivo);
                     Navigator.pop(context, formularioCriado);
                   } else {
