@@ -289,7 +289,7 @@ class _loginState extends State<login> {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    telaPrincipal(
+                                                    TelaPrincipal(
                                                         nome: userName,
                                                         idUsuario: idAtual),
                                               ),
