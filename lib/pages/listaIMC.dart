@@ -157,7 +157,7 @@ class _ListaIMCState extends State<ListaIMC> {
 
 
   void formularioIMC() {
-  String labelTitle = "Adicionar IMC";
+  String labelTitles = "Adicionar IMC";
   String labelConfirmationButton = "Salvar";
   String labelSkipButton = "Cancelar";
 
@@ -190,7 +190,7 @@ class _ListaIMCState extends State<ListaIMC> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(labelTitle,
+                  Text(labelTitles,
                       style: Theme.of(context).textTheme.headline5),
                   TextFormField(
                     controller: dataController,
@@ -327,13 +327,13 @@ class _ListaIMCState extends State<ListaIMC> {
                         child: Text(labelSkipButton,
                             style: TextStyle(
                                 color:
-                                    Color.fromRGBO(71, 146, 121, 0.819))),
+                                    Color.fromRGBO(71, 146, 121, 0.719))),
                       ),
                       const SizedBox(width: 16),
                       ElevatedButton(
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            // Se o formulário for válido, continue com a lógica
+                            
                             String data = dataController.text;
                             String peso = pesoController.text;
                             String altura = alturaController.text;
