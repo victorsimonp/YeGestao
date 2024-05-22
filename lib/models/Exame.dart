@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,6 +25,23 @@ class Exame {
         nomeExame: map["nomeExame"],
         arquivo: map["arquivo"],
         imagem: map["imagem"]);
+  }
+  factory Exame.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    final data = snapshot.data();
+    return Exame(
+        data: data?["data"],
+        nomeExame: data?["nomeExame"],
+        arquivo: data?["arquivo"],
+        imagem: data?["imagem"]);
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      "data": data,
+      "nomeExame": nomeExame,
+      "arquivo": arquivo,
+      "imagem": imagem,
+    };
   }
 
   Map<String, dynamic> toMap() {
