@@ -196,7 +196,32 @@ class _ListaGlicemiaState extends State<ListaGlicemia> {
                       controller: dataController,
                       decoration: const InputDecoration(
                         labelText: "Dia da Aferição da Glicemia",
+                        labelStyle: TextStyle(
+                            color: Colors
+                                .black), // Cor do label quando não está focado
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Color.fromRGBO(71, 146, 121, 0.612)),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors
+                                  .grey), // Cor da linha quando não está focado
+                        ),
+                        focusedErrorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors
+                                  .red), // Cor da linha em caso de erro e focado
+                        ),
+                        errorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color:
+                                  Colors.red), // Cor da linha em caso de erro
+                        ),
                       ),
+                      cursorColor:
+                          Color.fromRGBO(71, 146, 121, 0.612), // Cor do cursor
+                      style: TextStyle(color: Colors.black),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Por favor, insira a data da aferição.';
@@ -209,7 +234,32 @@ class _ListaGlicemiaState extends State<ListaGlicemia> {
                       controller: statusController,
                       decoration: const InputDecoration(
                         labelText: "Glicemia Aferida (ex:80)",
+                         labelStyle: TextStyle(
+                            color: Colors
+                                .black), // Cor do label quando não está focado
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Color.fromRGBO(71, 146, 121, 0.612)),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors
+                                  .grey), // Cor da linha quando não está focado
+                        ),
+                        focusedErrorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors
+                                  .red), // Cor da linha em caso de erro e focado
+                        ),
+                        errorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color:
+                                  Colors.red), // Cor da linha em caso de erro
+                        ),
                       ),
+                      cursorColor:
+                          Color.fromRGBO(71, 146, 121, 0.612), // Cor do cursor
+                      style: TextStyle(color: Colors.black),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Por favor, insira a glicemia aferida.';
@@ -229,7 +279,7 @@ class _ListaGlicemiaState extends State<ListaGlicemia> {
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: Text(labelSkipButtom),
+                          child: Text(labelSkipButtom, style: TextStyle(color: Color.fromRGBO(71, 146, 121, 0.819))),
                         ),
                         const SizedBox(width: 16),
                         ElevatedButton(
@@ -261,7 +311,7 @@ class _ListaGlicemiaState extends State<ListaGlicemia> {
                               Navigator.pop(context);
                             }
                           },
-                          child: Text(labelConfirmationButtom),
+                          child: Text(labelConfirmationButtom, style: TextStyle(color: Color.fromRGBO(71, 146, 121, 0.819))),
                         ),
                       ],
                     ),

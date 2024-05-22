@@ -194,9 +194,34 @@ class _ListaPressaoState extends State<ListaPressao> {
                         style: Theme.of(context).textTheme.headline5),
                     TextFormField(
                       controller: dataController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: "Dia da Aferição da Pressão",
+                        labelStyle: TextStyle(
+                            color: Colors
+                                .black), // Cor do label quando não está focado
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Color.fromRGBO(71, 146, 121, 0.612)),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors
+                                  .grey), // Cor da linha quando não está focado
+                        ),
+                        focusedErrorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors
+                                  .red), // Cor da linha em caso de erro e focado
+                        ),
+                        errorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color:
+                                  Colors.red), // Cor da linha em caso de erro
+                        ),
                       ),
+                      cursorColor:
+                          Color.fromRGBO(71, 146, 121, 0.612), // Cor do cursor
+                      style: TextStyle(color: Colors.black), // Cor do texto
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Por favor, insira a data da aferição.';
@@ -209,7 +234,32 @@ class _ListaPressaoState extends State<ListaPressao> {
                       controller: statusController,
                       decoration: const InputDecoration(
                         labelText: "Pressão Aferida (ex: 120/80)",
+                        labelStyle: TextStyle(
+                            color: Colors
+                                .black), // Cor do label quando não está focado
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Color.fromRGBO(71, 146, 121, 0.612)),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors
+                                  .grey), // Cor da linha quando não está focado
+                        ),
+                        focusedErrorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors
+                                  .red), // Cor da linha em caso de erro e focado
+                        ),
+                        errorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color:
+                                  Colors.red), // Cor da linha em caso de erro
+                        ),
                       ),
+                      cursorColor:
+                          Color.fromRGBO(71, 146, 121, 0.612), // Cor do cursor
+                      style: TextStyle(color: Colors.black),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Por favor, insira a pressão aferida.';
@@ -229,7 +279,9 @@ class _ListaPressaoState extends State<ListaPressao> {
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: Text(labelSkipButtom),
+                          child: Text(labelSkipButtom,
+                              style: TextStyle(
+                                  color: Color.fromRGBO(71, 146, 121, 0.819))),
                         ),
                         const SizedBox(width: 16),
                         ElevatedButton(
@@ -260,7 +312,9 @@ class _ListaPressaoState extends State<ListaPressao> {
                               Navigator.pop(context);
                             }
                           },
-                          child: Text(labelConfirmationButtom),
+                          child: Text(labelConfirmationButtom,
+                              style: TextStyle(
+                                  color: Color.fromRGBO(71, 146, 121, 0.819))),
                         ),
                       ],
                     ),
