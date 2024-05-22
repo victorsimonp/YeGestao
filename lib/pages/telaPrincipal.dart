@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gestao/models/Exame.dart';
+import 'package:gestao/models/IMC.dart';
 import 'package:gestao/models/Glicemia.dart';
 import 'package:gestao/pages/TelaPrincipalIMC.dart';
 import 'package:gestao/pages/formularioExame.dart';
 import 'package:gestao/pages/formularioIMC.dart';
 import 'package:gestao/pages/listaExame.dart';
 import 'package:gestao/pages/listaGlicemia.dart';
+import 'package:gestao/pages/listaIMC.dart';
+import 'package:gestao/pages/listaPesoAltura.dart';
 import 'package:gestao/pages/listaPressao.dart';
 import 'package:gestao/pages/login.dart';
 import 'package:gestao/models/Pressao.dart'; // Certifique-se de que este caminho está correto
@@ -74,7 +77,8 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ListaPressao(idUsuario: widget.idUsuario)),
+                                    builder: (context) => ListaPressao(
+                                        idUsuario: widget.idUsuario)),
                               );
                             },
                           );
@@ -97,7 +101,8 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
                           );
                         }
 
-                        if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                        if (snapshot.hasData &&
+                            snapshot.data!.docs.isNotEmpty) {
                           var doc = snapshot.data!.docs.first.data();
                           Pressao pressao = Pressao.fromMap(doc);
                           String statusPressao =
@@ -119,7 +124,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
                           return _buildInfoCard(
                             context,
                             title: 'Última aferição de Pressão',
-                            value: 'Sem dados',
+                            value: ' ',
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -174,7 +179,8 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
                           );
                         }
 
-                        if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                        if (snapshot.hasData &&
+                            snapshot.data!.docs.isNotEmpty) {
                           var doc = snapshot.data!.docs.first.data();
                           Glicemia glicemia = Glicemia.fromMap(doc);
                           String statusGlicemia =
@@ -196,7 +202,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
                           return _buildInfoCard(
                             context,
                             title: 'Última aferição de Glicemia',
-                            value: 'Sem dados',
+                            value: ' ',
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -209,33 +215,164 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
                         }
                       },
                     ),
-                   
-                    _buildInfoCard(
-                      context,
-                      title: 'Última verificação de peso e altura',
-                      value: '90kg 170cm',
-                      onTap: () {
-                         Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  TelaIMC()),
-                        );
+                    StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                      stream: firestore
+                          .collection("Usuários")
+                          .doc(widget.idUsuario)
+                          .collection('IMC')
+                          .orderBy('data', descending: true)
+                          .limit(1)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return _buildInfoCard(
+                            context,
+                            title: 'Última verificação de peso e altura',
+                            value: 'Erro ao carregar',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ListaPesoAltura(idUsuario: widget.idUsuario)),
+                              );
+                            },
+                          );
+                        }
+
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return _buildInfoCard(
+                            context,
+                            title: 'Última verificação de peso e altura',
+                            value: '',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ListaPesoAltura(idUsuario: widget.idUsuario)),
+                              );
+                            },
+                          );
+                        }
+
+                        if (snapshot.hasData &&
+                            snapshot.data!.docs.isNotEmpty) {
+                          var doc = snapshot.data!.docs.first.data();
+                          IMC imc = IMC.fromMap(doc);
+                          return _buildInfoCard(
+                            context,
+                            title: 'Verificação de peso e altura',
+                            value: '${imc.peso} kg \n${imc.altura} cm',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ListaPesoAltura(idUsuario: widget.idUsuario)),
+                              );
+                            },
+                          );
+                        } else {
+                          return _buildInfoCard(
+                            context,
+                            title: 'Última verificação de peso e altura',
+                            value: ' ',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ListaPesoAltura(idUsuario: widget.idUsuario)),
+                              );
+                            },
+                          );
+                        }
                       },
                     ),
-                    _buildInfoCard(
-                      context,
-                      title: 'IMC',
-                      value: '31,14\nObesidade II',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  formularioIMC()),
-                        );
+                    StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                      stream: firestore
+                          .collection("Usuários")
+                          .doc(widget.idUsuario)
+                          .collection('IMC')
+                          .orderBy('data', descending: true)
+                          .limit(1)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return _buildInfoCard(
+                            context,
+                            title: 'IMC',
+                            value: 'Erro ao carregar',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ListaIMC(idUsuario: widget.idUsuario)),
+                              );
+                            },
+                          );
+                        }
+
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return _buildInfoCard(
+                            context,
+                            title: 'IMC',
+                            value: 'Carregando...',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ListaIMC(idUsuario: widget.idUsuario)),
+                              );
+                            },
+                          );
+                        }
+
+                        if (snapshot.hasData &&
+                            snapshot.data!.docs.isNotEmpty) {
+                          var doc = snapshot.data!.docs.first.data();
+                          IMC imc = IMC.fromMap(doc);
+                          double peso = double.parse(imc.peso);
+                          double altura = double.parse(imc.altura);
+                          double imcValue =
+                              peso / ((altura / 100) * (altura / 100));
+                          String imcFormatted = imcValue.toStringAsFixed(1).substring(0, 2);
+                          return _buildInfoCard(
+                            context,
+                            title: 'IMC',
+                            value:
+                                '$imcFormatted\n${imc.status}',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ListaIMC(idUsuario: widget.idUsuario)),
+                              );
+                            },
+                          );
+                        } else {
+                          return _buildInfoCard(
+                            context,
+                            title: 'IMC',
+                            value: ' ',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ListaIMC(idUsuario: widget.idUsuario)),
+                              );
+                            },
+                          );
+                        }
                       },
-                    ),
+                    )
                   ],
                 ),
                 SizedBox(height: 40),
@@ -325,24 +462,27 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
       return "Desconhecido";
     }
   }
-  String _determineGlicemiaStatus(String glicemia) {
-  int glicemiaValue = int.tryParse(glicemia) ?? 0;
 
-  if (glicemiaValue < 70) {
-    return "Baixa";
-  } else if (glicemiaValue < 100) {
-    return "Normal";
-  } else if (glicemiaValue >= 100 && glicemiaValue <= 126) {
-    return "Atenção";
-  } else if (glicemiaValue > 126) {
-    return "Alta";
-  } else {
-    return "Desconhecido";
+  String _determineGlicemiaStatus(String glicemia) {
+    int glicemiaValue = int.tryParse(glicemia) ?? 0;
+
+    if (glicemiaValue < 70) {
+      return "Baixa";
+    } else if (glicemiaValue < 100) {
+      return "Normal";
+    } else if (glicemiaValue >= 100 && glicemiaValue <= 126) {
+      return "Atenção";
+    } else if (glicemiaValue > 126) {
+      return "Alta";
+    } else {
+      return "Desconhecido";
+    }
   }
-}
 
   Widget _buildInfoCard(BuildContext context,
-      {required String title, required String value, required VoidCallback onTap}) {
+      {required String title,
+      required String value,
+      required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -353,7 +493,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
               spreadRadius: 2,
-              blurRadius: 5,
+              blurRadius: 10,
               offset: Offset(0, 3),
             ),
           ],
@@ -387,7 +527,10 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.only(top: 25, bottom: 25,), // Diminua o padding superior e inferior
+        padding: const EdgeInsets.only(
+          top: 25,
+          bottom: 25,
+        ), // Diminua o padding superior e inferior
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -396,7 +539,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
               BoxShadow(
                 color: Colors.grey.withOpacity(0.5),
                 spreadRadius: 2,
-                blurRadius: 5,
+                blurRadius: 10,
                 offset: Offset(0, 3),
               ),
             ],
@@ -420,4 +563,3 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
     );
   }
 }
-

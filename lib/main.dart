@@ -5,7 +5,7 @@ import 'package:gestao/models/Exame.dart';
 import 'package:gestao/pages/formularioExame.dart';
 import 'package:gestao/pages/listaExame.dart';
 import 'package:gestao/pages/listaGlicemia.dart';
-import 'package:gestao/pages/listaIMC.dart';
+import 'package:gestao/pages/listaPesoAltura.dart';
 import 'package:gestao/pages/listaPressao.dart';
 import 'package:gestao/pages/login.dart';
 import 'package:gestao/pages/telaPrincipal.dart';
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromRGBO(71, 146, 121, 0.612)),
         useMaterial3: true,
       ),
-      home: ListaIMC(idUsuario: "dssSa",),      
+      home: TelaPrincipal(nome: "victor", idUsuario: "idUsuario"),      
     );
   }
 }
