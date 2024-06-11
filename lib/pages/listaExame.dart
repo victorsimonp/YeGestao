@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gestao/models/Exame.dart';
+import 'package:gestao/pages/edicaoExame.dart';
 import 'package:gestao/pages/exapansaoExame.dart';
 import 'package:gestao/pages/formularioExame.dart';
 import 'package:flutter/material.dart';
@@ -83,7 +84,8 @@ class ListaExameState extends State<ListaExame> {
                     itemCount: querySnapshot.docs.length,
                     itemBuilder: (context, indice) {
                       final exame = widget._exames[indice];
-                      return itemExame(exame);
+                      final idUsuario = widget.idUsuario;
+                      return itemExame(exame, idUsuario);
                     },
                   );
                 }
@@ -119,8 +121,9 @@ class ListaExameState extends State<ListaExame> {
 
 class itemExame extends StatelessWidget {
   final Exame _exame;
+  final String idUsuario;
 
-  itemExame(this._exame);
+  itemExame(this._exame, this.idUsuario);
 
   @override
   Widget build(BuildContext context) {
@@ -129,10 +132,32 @@ class itemExame extends StatelessWidget {
       leading: Icon(Icons.medication),
       title: Text(_exame.data.toString()),
       subtitle: Text(_exame.nomeExame.toString()),
+      trailing: IconButton(
+        onPressed: () {
+          FirebaseFirestore.instance
+              .collection('Usuários')
+              .doc(idUsuario)
+              .collection('Exames')
+              .where('nomeExame', isEqualTo: _exame.nomeExame)
+              .where('data', isEqualTo: _exame.data)
+              .get()
+              .then((value) {
+            print(value.docs.elementAt(0).id);
+          });
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return editarExame(
+              idUsuario: idUsuario,
+              exameAtual: _exame.toMap(),
+            );
+          }));
+        },
+        icon: Icon(Icons.edit),
+      ),
       //testando se ta arquivando corretamente as informações
-      onTap: () => Navigator.push(context,MaterialPageRoute(builder: (context) => ExpansaoExame(exameAtual: _exame))),
-    )
-    );
-
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ExpansaoExame(exameAtual: _exame))),
+    ));
   }
 }

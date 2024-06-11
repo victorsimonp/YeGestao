@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gestao/models/Exame.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 
 class ExpansaoExame extends StatefulWidget {
   final Exame exameAtual;
@@ -12,19 +14,16 @@ class ExpansaoExame extends StatefulWidget {
 
 class expansaoExameState extends State<ExpansaoExame> {
   var teste;
+  int currentPage = 0;
+  int totalPages = 0;
+  bool isReady = false;
+  String errorMessage = '';
 
   @override
   Widget build(BuildContext context) {
     Map teste = widget.exameAtual.toMap();
     String nome = teste['nomeExame'];
     String URL;
-    Future<String> downloadURLExample() async {
-      var URL = await FirebaseStorage.instance
-          .ref()
-          .child("Flutter.png")
-          .getDownloadURL();
-      return URL;
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -37,8 +36,7 @@ class expansaoExameState extends State<ExpansaoExame> {
         backgroundColor: Color.fromRGBO(71, 146, 121, 0.612),
         centerTitle: true,
       ),
-      body: 
-      FutureBuilder(
+      body: FutureBuilder(
           future: FirebaseStorage.instance
               .ref()
               .child('Exames')
@@ -52,22 +50,27 @@ class expansaoExameState extends State<ExpansaoExame> {
                 if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {
-                  print(snapshot.data);
-                  print('^aqui^');
                   String? imagem = snapshot.data;
-                  return InteractiveViewer(
-                    panEnabled: false, // Set it to false
-                    boundaryMargin: EdgeInsets.all(100),
-                    minScale: 0.5,
-                    maxScale: 2,
-                    child: Image.network(
-                      imagem!,
-                      fit: BoxFit.cover,
-                      height: double.infinity,
-                      width: double.infinity,
-                      alignment: Alignment.center,
-                    ),
-                  );
+                  if (teste['imagem'] == true) {
+                    return InteractiveViewer(
+                      panEnabled: false, // Set it to false
+                      boundaryMargin: EdgeInsets.all(100),
+                      minScale: 0.5,
+                      maxScale: 2,
+                      child: Image.network(
+                        imagem!,
+                        fit: BoxFit.cover,
+                        height: double.infinity,
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                      ),
+                    );
+                  } else if (teste['imagem'] == false) {
+                    return PDF(
+                      swipeHorizontal: true,
+                    ).cachedFromUrl(imagem!);
+                  } else
+                    return (Text(''));
                 }
             }
           }),

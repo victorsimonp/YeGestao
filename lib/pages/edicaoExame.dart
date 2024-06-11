@@ -13,25 +13,27 @@ import 'package:gestao/pages/login.dart';
 import 'package:gestao/pages/listaExame.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class FormularioExame extends StatefulWidget {
+class editarExame extends StatefulWidget {
   final String idUsuario;
-  FormularioExame({required this.idUsuario});
+  final Map exameAtual;
+  editarExame({required this.idUsuario, required this.exameAtual});
   @override
   State<StatefulWidget> createState() {
-    return FormularioExameState();
+    return editarExameState();
   }
 }
 
-class FormularioExameState extends State<FormularioExame> {
+class editarExameState extends State<editarExame> {
   File? _fotoSelecionada;
   var _arquivo;
   var _arquivoNome;
   var caminho;
-  bool tipoFile = false;
+  var tipoFile;
 
   Future _fotoCamera() async {
     final foto = await ImagePicker().pickImage(source: ImageSource.camera);
     if (foto == null) return;
+
     setState(() {
       _arquivo = File(foto.path);
       _arquivoNome = foto.name;
@@ -63,11 +65,18 @@ class FormularioExameState extends State<FormularioExame> {
 
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic> exame =
+        widget.exameAtual.map((key, value) => MapEntry(key.toString(), value));
+    String nomeOriginal = exame['nomeExame'];
+    String dataOriginal = exame['data'];
+    String arquivoOriginal = exame['arquivo'];
+    bool tipoOriginal = exame['imagem'];
+    String idExame = exame['id'];
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.black),
         title: Text(
-          'Adicionar Exame',
+          'Editar exame',
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
@@ -82,7 +91,8 @@ class FormularioExameState extends State<FormularioExame> {
               child: TextField(
                 controller: _controladorNomeExame,
                 decoration: InputDecoration(
-                    labelText: 'Nome Exame', hintText: 'Ex: Exame de Sangue'),
+                    labelText: "Alterar nome do exame",
+                    hintText: "Atual: $nomeOriginal"),
                 keyboardType: TextInputType.text,
               ),
             ),
@@ -91,8 +101,8 @@ class FormularioExameState extends State<FormularioExame> {
               child: TextFormField(
                 controller: _controladorDataExame,
                 decoration: InputDecoration(
-                    labelText: "Data do Exame",
-                    hintText: "Ex: 24/04/2024",
+                    labelText: "Alterar data do exame",
+                    hintText: "Atual: $dataOriginal",
                     icon: Icon(Icons.calendar_today)),
               ),
             ),
@@ -108,19 +118,19 @@ class FormularioExameState extends State<FormularioExame> {
                     File? foto = _fotoSelecionada;
                   },
                   icon: Icon(Icons.attach_file),
-                  tooltip: 'Selecionar Arquivo',
+                  tooltip: 'Substituir por arquivo',
                 ),
                 IconButton(
                   onPressed: () {
                     _fotoCamera();
                   },
                   icon: Icon(Icons.camera_alt),
-                  tooltip: 'Abrir Câmera',
+                  tooltip: 'Substituir por foto',
                 ),
               ],
             ),
             SizedBox(
-              height: 340,
+              height: 250,
             ),
             Padding(
               padding: const EdgeInsets.only(right: 8.0, left: 8),
@@ -130,43 +140,32 @@ class FormularioExameState extends State<FormularioExame> {
                   final String dia = _controladorDataExame.text;
                   final arquivoAtual = _arquivoNome;
                   final arquivo = _arquivo;
-                  final path = firestore
-                      .collection('usuários')
-                      .where('id', isEqualTo: widget.idUsuario)
-                      .get();
-                  print(path);
-                  print(arquivoAtual);
-                  print(nome);
-                  print(dia);
+                  final exameEditado = Exame(
+                      data: _controladorDataExame.text.isEmpty
+                          ? dataOriginal
+                          : dia,
+                      nomeExame: _controladorNomeExame.text.isEmpty
+                          ? nomeOriginal
+                          : nome,
+                      arquivo: (arquivoAtual == null)
+                          ? arquivoOriginal
+                          : arquivoAtual,
+                      imagem: (tipoFile == null) ? tipoOriginal : tipoFile,
+                      id: idExame);
+                  firestore
+                      .collection('Usuários')
+                      .doc(widget.idUsuario)
+                      .collection('Exames')
+                      .doc(idExame)
+                      .update(exameEditado.toMap());
+                  debugPrint('Histórico Exame');
+                  debugPrint('$exameEditado');
                   if (arquivoAtual != null) {
-                     var ref = firestore
-                        .collection('Usuários')
-                        .doc(widget.idUsuario)
-                        .collection('Exames')
-                        .doc();
-                    var idNovo = ref.id;
-                    ref.set({'id' : idNovo});
-                    final formularioCriado = Exame(
-                      data: dia,
-                      nomeExame: nome,
-                      arquivo: arquivoAtual,
-                      imagem: tipoFile,
-                      id : idNovo
-                    );
-                   
-                    firestore
-                        .collection('Usuários')
-                        .doc(widget.idUsuario)
-                        .collection('Exames').doc(idNovo)
-                        .update(formularioCriado.toMap(), );
-                    debugPrint('Histórico Exame');
-                    debugPrint('$formularioCriado');
+                    await storage.ref('Exames/$arquivoOriginal').delete();
                     final arquivoEnviado = storage.ref('Exames/$arquivoAtual');
                     await arquivoEnviado.putFile(arquivo);
-                    Navigator.pop(context, formularioCriado);
-                  } else {
-                    print('erro');
                   }
+                  Navigator.pop(context, exameEditado);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(71, 146, 121, 0.612),
@@ -179,6 +178,22 @@ class FormularioExameState extends State<FormularioExame> {
                 ),
               ),
             ),
+            SizedBox(height:10),
+            Padding(
+              padding: const EdgeInsets.only(right: 8, left: 8),
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 156.0, vertical: 10.0),
+                ),
+                child: Text(
+                  'Excluir',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+            )
           ],
         ),
       ),

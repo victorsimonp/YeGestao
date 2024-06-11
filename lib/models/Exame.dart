@@ -1,13 +1,11 @@
-import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Exame {
   String data;
   String nomeExame;
   String arquivo;
   bool imagem;
+  String id;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -16,6 +14,7 @@ class Exame {
     required this.nomeExame,
     required this.arquivo,
     required this.imagem,
+    required this.id,
   });
 
   factory Exame.fromMap(Map<String, dynamic> map) {
@@ -23,7 +22,8 @@ class Exame {
         data: map["data"],
         nomeExame: map["nomeExame"],
         arquivo: map["arquivo"],
-        imagem: map["imagem"]);
+        imagem: map["imagem"],
+        id: map["id"]);
   }
 
   Map<String, dynamic> toMap() {
@@ -31,7 +31,9 @@ class Exame {
       "data": data,
       "nomeExame": nomeExame,
       "arquivo": arquivo,
-      "imagem": imagem
+      "imagem": imagem,
+      "id":id
+
     };
   }
 }
