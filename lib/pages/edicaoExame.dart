@@ -165,7 +165,9 @@ class editarExameState extends State<editarExame> {
                     final arquivoEnviado = storage.ref('Exames/$arquivoAtual');
                     await arquivoEnviado.putFile(arquivo);
                   }
-                  Navigator.pop(context, exameEditado);
+                  Navigator.of(context)
+                    ..pop()
+                    ..pop();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(71, 146, 121, 0.612),
@@ -178,11 +180,22 @@ class editarExameState extends State<editarExame> {
                 ),
               ),
             ),
-            SizedBox(height:10),
+            SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.only(right: 8, left: 8),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  firestore
+                      .collection('Usuários')
+                      .doc(widget.idUsuario)
+                      .collection('Exames')
+                      .doc(idExame)
+                      .delete();
+                  storage.ref('Exames/$arquivoOriginal').delete();
+                  Navigator.of(context)
+                    ..pop()
+                    ..pop();
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   padding:

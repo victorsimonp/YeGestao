@@ -98,7 +98,10 @@ class ListaExameState extends State<ListaExame> {
             return FormularioExame(
               idUsuario: widget.idUsuario,
             );
-          }));
+          }
+          )
+          )
+          ;
           future.then((exameRecebido) {
             Future.delayed(Duration(seconds: 1), () {
               debugPrint('chegou no then do future');
@@ -134,16 +137,6 @@ class itemExame extends StatelessWidget {
       subtitle: Text(_exame.nomeExame.toString()),
       trailing: IconButton(
         onPressed: () {
-          FirebaseFirestore.instance
-              .collection('Usuários')
-              .doc(idUsuario)
-              .collection('Exames')
-              .where('nomeExame', isEqualTo: _exame.nomeExame)
-              .where('data', isEqualTo: _exame.data)
-              .get()
-              .then((value) {
-            print(value.docs.elementAt(0).id);
-          });
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return editarExame(
               idUsuario: idUsuario,
