@@ -6,9 +6,11 @@ import 'package:gestao/models/Glicemia.dart';
 import 'package:gestao/pages/TelaPrincipalIMC.dart';
 import 'package:gestao/pages/formularioExame.dart';
 import 'package:gestao/pages/formularioIMC.dart';
+import 'package:gestao/pages/listaConsultas.dart';
 import 'package:gestao/pages/listaExame.dart';
 import 'package:gestao/pages/listaGlicemia.dart';
 import 'package:gestao/pages/listaIMC.dart';
+import 'package:gestao/pages/listaMedicamentos.dart';
 import 'package:gestao/pages/listaPesoAltura.dart';
 import 'package:gestao/pages/listaPressao.dart';
 import 'package:gestao/pages/login.dart';
@@ -402,7 +404,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  ListaGlicemia(idUsuario: widget.idUsuario)),
+                                  ListaConsultas(idUsuario: widget.idUsuario)),
                         );
                       },
                     ),
@@ -414,7 +416,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  ListaPressao(idUsuario: widget.idUsuario)),
+                                  ListaMedicamentos(idUsuario: widget.idUsuario)),
                         );
                       },
                     ),
