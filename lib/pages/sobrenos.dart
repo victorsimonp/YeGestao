@@ -1,0 +1,75 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'YE Gestão de Saúde',
+      home: SobreNosScreen(),
+    );
+  }
+}
+
+class SobreNosScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: <Widget>[
+          Container(
+            color: Colors.grey,
+            width: double.infinity,
+            padding: EdgeInsets.all(20),
+            child: Text(
+              'YE Gestão de Saúde',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: Container(
+                color: Colors.grey,
+                width: 300, // Largura do quadrado
+                height: 500, // Altura do quadrado
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Text(
+                          'Nós somos o Minha Saúde em Dia, um aplicativo desenvolvido para melhorar a gestão da sua própria saúde e melhorar sua qualidade de vida.\n\n'
+                          'Nele você pode colocar lembretes de suas consultas, colocar um resumo delas, definir os horários de suas medicações com apenas quatro informações, organizar os resultados de seus exames, como armazenar uma cópia deles e muito mais.',
+                          style:
+                              TextStyle(fontSize: 19, color: Color(0xff000000)),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Sua saúde em suas mãos!',
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xffffffff),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
