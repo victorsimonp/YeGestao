@@ -3,16 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:gestao/models/Exame.dart';
 import 'package:gestao/models/IMC.dart';
 import 'package:gestao/models/Glicemia.dart';
-import 'package:gestao/pages/TelaPrincipalIMC.dart';
 import 'package:gestao/pages/formularioExame.dart';
-import 'package:gestao/pages/formularioIMC.dart';
+import 'package:gestao/pages/listaConsultas.dart';
 import 'package:gestao/pages/listaExame.dart';
 import 'package:gestao/pages/listaGlicemia.dart';
 import 'package:gestao/pages/listaIMC.dart';
+import 'package:gestao/pages/listaMedicamentos.dart';
 import 'package:gestao/pages/listaPesoAltura.dart';
 import 'package:gestao/pages/listaPressao.dart';
 import 'package:gestao/pages/login.dart';
-import 'package:gestao/models/Pressao.dart'; // Certifique-se de que este caminho está correto
+import 'package:gestao/models/Pressao.dart';
+import 'package:gestao/pages/sobreNos.dart'; // Certifique-se de que este caminho está correto
 
 class TelaPrincipal extends StatefulWidget {
   final String nome;
@@ -402,7 +403,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  ListaGlicemia(idUsuario: widget.idUsuario)),
+                                  ListaConsultas(idUsuario: widget.idUsuario)),
                         );
                       },
                     ),
@@ -414,7 +415,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  ListaPressao(idUsuario: widget.idUsuario)),
+                                  ListaMedicamentos(idUsuario: widget.idUsuario)),
                         );
                       },
                     ),
@@ -425,7 +426,12 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
                   padding: EdgeInsets.only(left: 260, bottom: 50),
                   child: TextButton(
                     onPressed: () {
-                      // Adicione a navegação para a tela "Sobre nós", se necessário.
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  SobreNosScreen()),
+                        );
                     },
                     child: Text(
                       'Sobre nós',

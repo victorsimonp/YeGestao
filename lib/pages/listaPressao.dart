@@ -41,6 +41,63 @@ class _ListaPressaoState extends State<ListaPressao> {
         centerTitle: true,
         backgroundColor: Color.fromRGBO(71, 146, 121, 0.612),
         iconTheme: IconThemeData(color: Colors.black),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'Editar') {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text('Selecionar Pressão para Editar', style: TextStyle(fontSize: 20),),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: pressaoAferida.map((pressao) {
+                          return ListTile(
+                            title: Text('${pressao.data} - ${pressao.status}'),
+                            onTap: () {
+                              Navigator.pop(context);
+                              editarPressao(pressao);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  },
+                );
+              } else if (value == 'Excluir') {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text('Selecionar Pressão para Excluir'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: pressaoAferida.map((pressao) {
+                          return ListTile(
+                            title: Text('${pressao.data} - ${pressao.status}'),
+                            onTap: () {
+                              Navigator.pop(context);
+                              excluirPressao(pressao);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  },
+                );
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return {'Editar', 'Excluir'}.map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -196,6 +253,7 @@ class _ListaPressaoState extends State<ListaPressao> {
                       controller: dataController,
                       decoration: InputDecoration(
                         labelText: "Dia da Aferição da Pressão",
+                        hintText: "Ex: 24/09/2024",
                         labelStyle: TextStyle(
                             color: Colors
                                 .black), // Cor do label quando não está focado
@@ -233,7 +291,8 @@ class _ListaPressaoState extends State<ListaPressao> {
                     TextFormField(
                       controller: statusController,
                       decoration: const InputDecoration(
-                        labelText: "Pressão Aferida (ex: 120/80)",
+                        labelText: "Pressão Aferida",
+                        hintText: "Ex: 120/80",
                         labelStyle: TextStyle(
                             color: Colors
                                 .black), // Cor do label quando não está focado
@@ -259,7 +318,7 @@ class _ListaPressaoState extends State<ListaPressao> {
                       ),
                       cursorColor:
                           Color.fromRGBO(71, 146, 121, 0.612), // Cor do cursor
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(color: Colors.black), // Cor do texto
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Por favor, insira a pressão aferida.';
@@ -281,32 +340,35 @@ class _ListaPressaoState extends State<ListaPressao> {
                           },
                           child: Text(labelSkipButtom,
                               style: TextStyle(
-                                  color: Color.fromRGBO(71, 146, 121, 0.819))),
+                                  color:
+                                      Color.fromRGBO(71, 146, 121, 0.819))),
                         ),
                         const SizedBox(width: 16),
                         ElevatedButton(
                           onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              // Se o formulário for válido, continue com a lógica
-                              String pressaoAferidaText = statusController.text;
-                              String status =
-                                  _determinePressaoStatus(pressaoAferidaText);
-
-                              Pressao pressao = Pressao(
-                                id: const Uuid().v1(),
-                                status: pressaoAferidaText,
+                            if (_formKey.currentState!
+                                .validate()) {
+                              // Valida o formulário
+                              var id = Uuid().v4();
+                              var novaPressao = Pressao(
+                                id: id,
+                                status: statusController.text,
                                 data: dataController.text,
                               );
+                              var pressaoAferidaText = statusController.text;
+                              String status =
+                                  _determinePressaoStatus(pressaoAferidaText);
+                              novaPressao.status = pressaoAferidaText;
 
                               await firestore
                                   .collection('Usuários')
                                   .doc(widget.idUsuario)
                                   .collection('Pressão')
-                                  .add(pressao.toMap());
+                                  .doc(id)
+                                  .set(novaPressao.toMap());
 
                               setState(() {
-                                pressaoAferida.insert(
-                                    0, pressao); // Adicione ao início da lista
+                                pressaoAferida.add(novaPressao);
                               });
 
                               Navigator.pop(context);
@@ -314,7 +376,8 @@ class _ListaPressaoState extends State<ListaPressao> {
                           },
                           child: Text(labelConfirmationButtom,
                               style: TextStyle(
-                                  color: Color.fromRGBO(71, 146, 121, 0.819))),
+                                  color:
+                                      Color.fromRGBO(71, 146, 121, 0.819))),
                         ),
                       ],
                     ),
@@ -329,54 +392,194 @@ class _ListaPressaoState extends State<ListaPressao> {
   }
 
   Future<void> refresh() async {
-    print('Iniciando refresh...'); // Debug log
-    List<Pressao> temp = [];
+    QuerySnapshot<Map<String, dynamic>> snapshot = await firestore
+        .collection('Usuários')
+        .doc(widget.idUsuario)
+        .collection('Pressão')
+        .get();
 
-    try {
-      QuerySnapshot<Map<String, dynamic>> snapshot = await firestore
-          .collection("Usuários")
-          .doc(widget.idUsuario)
-          .collection('Pressão')
-          .orderBy('data',
-              descending: true) // Ordene por data, mais recente primeiro
-          .get();
+    setState(() {
+      pressaoAferida = snapshot.docs
+          .map((doc) => Pressao.fromMap(doc.data()))
+          .toList();
+    });
+  }
 
-      for (var doc in snapshot.docs) {
-        print('Documento encontrado: ${doc.data()}'); // Debug log
-        temp.add(Pressao.fromMap(doc.data()));
-      }
+  String _getPressaoStatus(String pressao) {
+    List<String> pressaoValues = pressao.split('/');
+    int sistolica = int.tryParse(pressaoValues[0]) ?? 0;
+    int diastolica = int.tryParse(pressaoValues[1]) ?? 0;
 
-      setState(() {
-        pressaoAferida = temp;
-      });
-    } catch (e) {
-      print('Erro ao recuperar dados: $e'); // Debug log
+    if (sistolica < 90 || diastolica < 60) {
+      return 'Baixa';
+    } else if (sistolica > 140 || diastolica > 90) {
+      return 'Alta';
+    } else {
+      return 'Normal';
     }
   }
 
   String _determinePressaoStatus(String pressao) {
-    final parts = pressao.split('/');
-    if (parts.length != 2) return "Formato inválido";
+    List<String> pressaoValues = pressao.split('/');
+    int sistolica = int.tryParse(pressaoValues[0]) ?? 0;
+    int diastolica = int.tryParse(pressaoValues[1]) ?? 0;
 
-    final sistolica = int.tryParse(parts[0]) ?? 0;
-    final diastolica = int.tryParse(parts[1]) ?? 0;
-
-    if (sistolica < 90 && diastolica < 60) {
-      return "Baixa";
-    } else if (sistolica < 120 && diastolica < 80) {
-      return "Ótima";
-    } else if (sistolica <= 129 && diastolica <= 84) {
-      return "Normal";
-    } else if (sistolica <= 139 && diastolica <= 89) {
-      return "Atenção";
-    } else if (sistolica >= 140 || diastolica >= 90) {
-      return "Alta";
+    if (sistolica < 90 || diastolica < 60) {
+      return 'Baixa';
+    } else if (sistolica > 140 || diastolica > 90) {
+      return 'Alta';
     } else {
-      return "Desconhecido";
+      return 'Normal';
     }
   }
 
-  String _getPressaoStatus(String pressao) {
-    return _determinePressaoStatus(pressao);
+  void editarPressao(Pressao pressao) {
+    String labelTitle = "Editar Pressão Aferida";
+    String labelConfirmationButtom = "Salvar";
+    String labelSkipButtom = "Cancelar";
+
+    TextEditingController statusController = TextEditingController(text: pressao.status);
+    TextEditingController dataController = TextEditingController(text: pressao.data);
+    final _formKey = GlobalKey<FormState>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.6,
+            padding: const EdgeInsets.all(32.0),
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(labelTitle, style: Theme.of(context).textTheme.headline5),
+                    TextFormField(
+                      controller: dataController,
+                      decoration: InputDecoration(
+                        labelText: "Dia da Aferição da Pressão",
+                        labelStyle: TextStyle(color: Colors.black),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Color.fromRGBO(71, 146, 121, 0.612)),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                        focusedErrorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                        ),
+                        errorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                        ),
+                      ),
+                      cursorColor: Color.fromRGBO(71, 146, 121, 0.612),
+                      style: TextStyle(color: Colors.black),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor, insira a data da aferição.';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: statusController,
+                      decoration: const InputDecoration(
+                        labelText: "Pressão Aferida (ex: 120/80)",
+                        labelStyle: TextStyle(color: Colors.black),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Color.fromRGBO(71, 146, 121, 0.612)),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                        focusedErrorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                        ),
+                        errorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                        ),
+                      ),
+                      cursorColor: Color.fromRGBO(71, 146, 121, 0.612),
+                      style: TextStyle(color: Colors.black),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor, insira a pressão aferida.';
+                        }
+                        final RegExp regex = RegExp(r'^\d{2,3}/\d{2,3}$');
+                        if (!regex.hasMatch(value)) {
+                          return 'Insira a pressão no formato correto (ex: 120/80).';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(labelSkipButtom, style: TextStyle(color: Color.fromRGBO(71, 146, 121, 0.819))),
+                        ),
+                        const SizedBox(width: 16),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              String pressaoAferidaText = statusController.text;
+                              String status = _determinePressaoStatus(pressaoAferidaText);
+
+                              pressao.status = pressaoAferidaText;
+                              pressao.data = dataController.text;
+
+                              await firestore
+                                  .collection('Usuários')
+                                  .doc(widget.idUsuario)
+                                  .collection('Pressão')
+                                  .doc(pressao.id)
+                                  .update(pressao.toMap());
+
+                              setState(() {
+                                pressaoAferida[pressaoAferida.indexWhere((p) => p.id == pressao.id)] = pressao;
+                              });
+
+                              Navigator.pop(context);
+                            }
+                          },
+                          child: Text(labelConfirmationButtom, style: TextStyle(color: Color.fromRGBO(71, 146, 121, 0.819))),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void excluirPressao(Pressao pressao) async {
+    await firestore
+        .collection('Usuários')
+        .doc(widget.idUsuario)
+        .collection('Pressão')
+        .doc(pressao.id)
+        .delete();
+
+    setState(() {
+      pressaoAferida.removeWhere((p) => p.id == pressao.id);
+    });
   }
 }
