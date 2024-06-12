@@ -1,28 +1,32 @@
 import 'package:flutter/material.dart';
+
 class SobreNosScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: <Widget>[
-          Container(
-            color: Colors.grey,
-            width: double.infinity,
-            padding: EdgeInsets.all(20),
-            child: Text(
-              'YE Gestão de Saúde',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+          AppBar(
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
               ),
-              textAlign: TextAlign.center,
+              onPressed: () {
+                Navigator.pop(context); // Navega para a tela anterior
+              },
             ),
+            title: Text(
+              "YE Gestão de Saúde",
+              style: TextStyle(fontSize: 20, color: Colors.black),
+            ),
+            centerTitle: true,
+            backgroundColor: Color.fromRGBO(71, 146, 121, 0.612),
           ),
           Expanded(
             child: Center(
               child: Container(
-                color: Colors.grey,
+                color: Color.fromRGBO(71, 146, 121, 0.612),
                 width: 300, // Largura do quadrado
                 height: 500, // Altura do quadrado
                 padding: EdgeInsets.all(10),
@@ -46,7 +50,7 @@ class SobreNosScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xffffffff),
+                        color: Colors.black,
                       ),
                       textAlign: TextAlign.center,
                     ),

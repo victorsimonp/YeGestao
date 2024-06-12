@@ -53,7 +53,8 @@ class _ListaConsultasState extends State<ListaConsultas> {
                     TextFormField(
                       controller: especialidadeController,
                       decoration: InputDecoration(
-                        labelText: "Especialidade",
+                        labelText: "Especialidade do Médico",
+                        hintText: "Ex: Cardiologista",
                         labelStyle: TextStyle(color: Colors.black),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
@@ -82,7 +83,8 @@ class _ListaConsultasState extends State<ListaConsultas> {
                     TextFormField(
                       controller: dataController,
                       decoration: InputDecoration(
-                        labelText: "Data",
+                        labelText: "Data da Consulta",
+                        hintText: "Ex: 24/09/2024",
                         labelStyle: TextStyle(color: Colors.black),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
@@ -111,7 +113,8 @@ class _ListaConsultasState extends State<ListaConsultas> {
                     TextFormField(
                       controller: horarioController,
                       decoration: InputDecoration(
-                        labelText: "Horário",
+                        labelText: "Horário da Consulta",
+                        hintText: "Ex: 22:00",
                         labelStyle: TextStyle(color: Colors.black),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
@@ -141,6 +144,7 @@ class _ListaConsultasState extends State<ListaConsultas> {
                       controller: resumoController,
                       decoration: InputDecoration(
                         labelText: "Resumo da consulta",
+                        hintText: "Ex: O médico pediu exames para o retorno",
                         labelStyle: TextStyle(color: Colors.black),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
@@ -170,7 +174,8 @@ class _ListaConsultasState extends State<ListaConsultas> {
                     TextFormField(
                       controller: retornoController,
                       decoration: InputDecoration(
-                        labelText: "Retorno",
+                        labelText: "Data do Retorno",
+                        hintText: "Ex: 24/09/2025",
                         labelStyle: TextStyle(color: Colors.black),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
@@ -270,7 +275,7 @@ class _ListaConsultasState extends State<ListaConsultas> {
         stream: firestore
             .collection("Usuários")
             .doc(widget.idUsuario)
-            .collection('Medicamentos')
+            .collection('Consultas')
             .orderBy('data', descending: true)
             .snapshots(),
         builder: (context, snapshot) {

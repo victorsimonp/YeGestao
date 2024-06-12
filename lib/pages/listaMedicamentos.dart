@@ -52,15 +52,15 @@ class _ListaMedicamentosState extends State<ListaMedicamentos> {
                       controller: nomeRemedioController,
                       decoration: InputDecoration(
                         labelText: "Nome do Remédio",
-                        // Adicione os outros campos de entrada de texto aqui
+                        hintText: "Ex: Paracetamol",
                       ),
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: horarioController,
                       decoration: InputDecoration(
-                        labelText: "Horário",
-                        // Adicione os outros campos de entrada de texto aqui
+                        labelText: "Horário da Medicação",
+                        hintText: "Ex: 22:00",
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -68,15 +68,15 @@ class _ListaMedicamentosState extends State<ListaMedicamentos> {
                       controller: periodoController,
                       decoration: InputDecoration(
                         labelText: "Período",
-                        // Adicione os outros campos de entrada de texto aqui
+                        hintText: "Ex: 7 dias",
                       ),
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: dataController,
                       decoration: InputDecoration(
-                        labelText: "Data",
-                        // Adicione os outros campos de entrada de texto aqui
+                        labelText: "Data de Início da Medicação",
+                        hintText: "Ex: 24/09/2024",
                       ),
                     ),
                     const SizedBox(height: 16),

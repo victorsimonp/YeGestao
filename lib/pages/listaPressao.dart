@@ -253,6 +253,7 @@ class _ListaPressaoState extends State<ListaPressao> {
                       controller: dataController,
                       decoration: InputDecoration(
                         labelText: "Dia da Aferição da Pressão",
+                        hintText: "Ex: 24/09/2024",
                         labelStyle: TextStyle(
                             color: Colors
                                 .black), // Cor do label quando não está focado
@@ -290,7 +291,8 @@ class _ListaPressaoState extends State<ListaPressao> {
                     TextFormField(
                       controller: statusController,
                       decoration: const InputDecoration(
-                        labelText: "Pressão Aferida (ex: 120/80)",
+                        labelText: "Pressão Aferida",
+                        hintText: "Ex: 120/80",
                         labelStyle: TextStyle(
                             color: Colors
                                 .black), // Cor do label quando não está focado

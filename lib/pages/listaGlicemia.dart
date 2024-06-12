@@ -268,6 +268,7 @@ class _ListaGlicemiaState extends State<ListaGlicemia> {
                       controller: dataController,
                       decoration: const InputDecoration(
                         labelText: "Dia da Aferição da Glicemia",
+                        hintText: "Ex: 24/09/2024",
                         labelStyle: TextStyle(color: Colors.black),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
@@ -296,7 +297,8 @@ class _ListaGlicemiaState extends State<ListaGlicemia> {
                     TextFormField(
                       controller: statusController,
                       decoration: const InputDecoration(
-                        labelText: "Glicemia Aferida (ex:80)",
+                        labelText: "Glicemia Aferida",
+                        hintText: "Ex: 80",
                         labelStyle: TextStyle(color: Colors.black),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(

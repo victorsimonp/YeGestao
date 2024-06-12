@@ -328,7 +328,8 @@ class _ListaPesoAlturaState extends State<ListaPesoAltura> {
                     TextFormField(
                       controller: dataController,
                       decoration: const InputDecoration(
-                        labelText: "Data",
+                        labelText: "Data da Verificação do IMC",
+                        hintText: "Ex: 25/09/2024",
                         labelStyle: TextStyle(
                             color: Colors
                                 .black), // Cor do label quando não está focado
@@ -366,7 +367,8 @@ class _ListaPesoAlturaState extends State<ListaPesoAltura> {
                     TextFormField(
                       controller: pesoController,
                       decoration: const InputDecoration(
-                        labelText: "Peso (kg)",
+                        labelText: "Peso em Kg",
+                        hintText: "80",
                         labelStyle: TextStyle(
                             color: Colors
                                 .black), // Cor do label quando não está focado
@@ -409,7 +411,8 @@ class _ListaPesoAlturaState extends State<ListaPesoAltura> {
                     TextFormField(
                       controller: alturaController,
                       decoration: const InputDecoration(
-                        labelText: "Altura (cm)",
+                        labelText: "Altura em Cm",
+                        hintText: "Ex: 180",
                         labelStyle: TextStyle(
                             color: Colors
                                 .black), // Cor do label quando não está focado

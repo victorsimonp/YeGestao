@@ -132,7 +132,7 @@ class _loginState extends State<login> {
                                           if (value == null) {
                                             return "O Nome não pode ser vazio";
                                           }
-                                          if (value.length < 4) {
+                                          if (value.length < 1) {
                                             return "O nome é muito curto";
                                           }
                                           return null;
@@ -153,28 +153,73 @@ class _loginState extends State<login> {
                                       ),
                                     ),
                                     Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 20.0, left: 10.0, right: 10.0),
-                                        child: Theme(
-                                          data: ThemeData(
-                                              primaryColor: Color.fromARGB(
-                                                  255, 44, 44, 44),
-                                              textTheme: TextTheme(
-                                                  bodyLarge: TextStyle(
-                                                      color: Color.fromARGB(
-                                                          255, 44, 44, 44)))),
-                                          child: InputDatePickerFormField(
-                                            initialDate: DateTime.now(),
-                                            firstDate: DateTime(1900),
-                                            lastDate: DateTime.now(),
-                                            fieldLabelText:
-                                                "Nascimento ( Mês/ Dia / Ano)",
+                                      padding: const EdgeInsets.only(
+                                          left: 10.0, right: 10.0),
+                                      child: TextFormField(
+                                        validator: (String? value) {
+                                          if (value == null || value.isEmpty) {
+                                            return "A data não pode ser vazia";
+                                          }
+
+                                          // Verificar formato usando regex
+                                          RegExp dateRegEx =
+                                              RegExp(r'^\d{2}/\d{2}/\d{4}$');
+                                          if (!dateRegEx.hasMatch(value)) {
+                                            return "Formato de data inválido. Use dd/MM/yyyy";
+                                          }
+
+                                          // Tentar converter a data para DateTime
+                                          DateTime? date;
+                                          try {
+                                            List<String> parts =
+                                                value.split('/');
+                                            int day = int.parse(parts[0]);
+                                            int month = int.parse(parts[1]);
+                                            int year = int.parse(parts[2]);
+                                            date = DateTime(year, month, day);
+                                          } catch (e) {
+                                            return "Data inválida";
+                                          }
+
+                                          // Verificar se a data não está no futuro
+                                          if (date != null &&
+                                              date.isAfter(DateTime.now())) {
+                                            return "A data não pode estar no futuro";
+                                          }
+
+                                          // Verificar se o usuário tem pelo menos 18 anos (ou outra idade mínima)
+                                          DateTime today = DateTime.now();
+                                          DateTime ageLimit = DateTime(
+                                              today.year - 18,
+                                              today.month,
+                                              today.day);
+                                          if (date != null &&
+                                              date.isAfter(ageLimit)) {
+                                            return "Você deve ter pelo menos 18 anos";
+                                          }
+
+                                          return null;
+                                        },
+                                        decoration: InputDecoration(
+                                          label: Text(
+                                            "Data de Nascimento",
+                                            style: TextStyle(
+                                                color: Color.fromARGB(
+                                                    255, 44, 44, 44)),
                                           ),
-                                        ))
+                                          hintText: "Ex: 04/06/2004",
+                                          focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Color.fromARGB(
+                                                    255, 44, 44, 44)),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 )),
                             SizedBox(
-                              height: 30,
+                              height: 50,
                             ),
                             SizedBox(
                               width: double.infinity,
@@ -321,64 +366,7 @@ class _loginState extends State<login> {
                                   ),
                                 ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  right: 10.0, left: 10.0),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  _logarComGoogle();
-                                },
-                                style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
-                                      Color.fromARGB(255, 240, 82, 82)),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(FontAwesomeIcons.google,
-                                        color: Colors.white),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      "Entrar com o Google",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 2),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  right: 10.0, left: 10.0),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  _logarComFacebook();
-                                },
-                                style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.all(Colors.blue)),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.facebook, color: Colors.white),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      "Entrar com o Facebook",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                            ),                            
                             SizedBox(
                               height: 20,
                             ),
@@ -399,48 +387,5 @@ class _loginState extends State<login> {
                             ),
                           ],
                         ))))));
-  }
-
-  Future<void> _logarComGoogle() async {
-    final GoogleSignIn _logarComGoogle = GoogleSignIn();
-
-    try {
-      final GoogleSignInAccount? googleSignInAccount =
-          await _logarComGoogle.signIn();
-
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
-
-        final AuthCredential credential = GoogleAuthProvider.credential(
-            idToken: googleSignInAuthentication.idToken,
-            accessToken: googleSignInAuthentication.accessToken);
-
-        // final UserCredential userCredential =
-        //     await _fi.signInWithCredential(credential);
-
-        // // Navegue para a próxima tela após o login com sucesso
-        // if (userCredential.user != null) {
-        //   Navigator.pushNamed(context as BuildContext, "/home");
-        // }
-      }
-    } catch (e) {}
-  }
-
-  Future<void> _logarComFacebook() async {
-    try {
-      final LoginResult result = await FacebookAuth.instance.login();
-
-      if (result.status == LoginStatus.success) {
-        // Login com Facebook bem-sucedido, você pode prosseguir com o seu fluxo de autenticação aqui
-        print('Login com Facebook bem-sucedido!');
-      } else {
-        // Login com Facebook falhou, trate de acordo
-        print('Login com Facebook falhou: ${result.message}');
-      }
-    } catch (e) {
-      // Trate quaisquer erros de exceção aqui
-      print('Erro ao tentar fazer login com Facebook: $e');
-    }
-  }
+  } 
 }
