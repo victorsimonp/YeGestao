@@ -105,7 +105,7 @@ class ListaExameState extends State<ListaExame> {
           future.then((exameRecebido) {
             Future.delayed(Duration(seconds: 1), () {
               debugPrint('chegou no then do future');
-              debugPrint('$exameRecebido');
+              print(exameRecebido);
               setState(() {
                 widget._exames.add(exameRecebido);
               });

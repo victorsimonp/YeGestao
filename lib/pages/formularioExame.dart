@@ -130,35 +130,29 @@ class FormularioExameState extends State<FormularioExame> {
                   final String dia = _controladorDataExame.text;
                   final arquivoAtual = _arquivoNome;
                   final arquivo = _arquivo;
-                  final path = firestore
-                      .collection('usuários')
-                      .where('id', isEqualTo: widget.idUsuario)
-                      .get();
-                  print(path);
-                  print(arquivoAtual);
-                  print(nome);
-                  print(dia);
+                  print(widget.idUsuario);
                   if (arquivoAtual != null) {
-                     var ref = firestore
+                    var ref = await firestore
                         .collection('Usuários')
                         .doc(widget.idUsuario)
                         .collection('Exames')
                         .doc();
                     var idNovo = ref.id;
-                    ref.set({'id' : idNovo});
                     final formularioCriado = Exame(
-                      data: dia,
-                      nomeExame: nome,
-                      arquivo: arquivoAtual,
-                      imagem: tipoFile,
-                      id : idNovo
-                    );
-                   
+                        data: dia,
+                        nomeExame: nome,
+                        arquivo: arquivoAtual,
+                        imagem: tipoFile,
+                        id: idNovo);
+
                     firestore
                         .collection('Usuários')
                         .doc(widget.idUsuario)
-                        .collection('Exames').doc(idNovo)
-                        .update(formularioCriado.toMap(), );
+                        .collection('Exames')
+                        .doc(idNovo)
+                        .set(
+                          formularioCriado.toMap(),
+                        );
                     debugPrint('Histórico Exame');
                     debugPrint('$formularioCriado');
                     final arquivoEnviado = storage.ref('Exames/$arquivoAtual');
